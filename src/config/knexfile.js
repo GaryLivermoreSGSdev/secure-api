@@ -16,22 +16,22 @@ module.exports = {
     }
   },
 
-  test: {
-    client: 'pg',
-    connection: {
-      host: 'localhost',
-      port: '9102',
-      database: 'armoney-test',
-      user: 'armoney-test',
-      password: 'armoney-test',
-    },
-    migrations: {
-      directory: '../database/migrations'
-    },
-    seeds: {
-      directory: '../database/seeds'
-    }
+test: {
+  client: 'pg',
+  connection: {
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: process.env.DB_PORT || 5432,
+    database: 'armoney-test',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
   },
+  migrations: {
+    directory: '../database/migrations'
+  },
+  seeds: {
+    directory: '../database/seeds'
+  }
+},
 
   production: {
     client: 'pg',
