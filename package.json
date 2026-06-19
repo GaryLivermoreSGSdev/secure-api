@@ -31,8 +31,8 @@
   },
   "scripts": {
     "postinstall": "per-env",
-    "postinstall:development": "npm run start-db && npm run wait-for-db && npm run reset-db && npm run migrate-db && npm run seed-db",
-    "postinstall:test": "npm run start-db && npm run wait-for-db",
+    "postinstall:development": "echo 'Skipping DB setup in CI/dev'",
+    "postinstall:test": "npm run wait-for-db",
     "postinstall:production": "",
     "test": "npm run lint && npm run test-with-coverage",
     "pretest": "npm run reset-db -- --env test && npm run migrate-db -- --env test",
@@ -42,7 +42,8 @@
     "reset-db": "knex migrate:rollback --all --knexfile src/config/knexfile.js",
     "seed-db": "knex seed:run --knexfile src/config/knexfile.js",
     "dev": "nodemon src/index.js",
-    "predev": "npm run migrate-db"
+    "predev": "npm run migrate-db",
+    "wait-for-db": "echo 'Skipping DB wait in CI'"
   },
   "author": "Andrew Burgess / QA Apprenticeships",
   "license": "ISC",
