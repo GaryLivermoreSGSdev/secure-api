@@ -8,25 +8,57 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
+    # This replaces your old docker-compose approach
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: secure_api_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      NODE_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: secure_api_test
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-    - name: Set environment variables
-      run: echo "NODE_ENV=test" >> $GITHUB_ENV
-    - name: Prepare dependencies
-      run: |
-        npm ci
-        npm run build --if-present
-    - name: Run all tests
-      run: npm test
-    - name: Archive test and code-coverage results
-      uses: actions/upload-artifact@v4
-      if: ${{ always() }}
-      with:
-        name: test-and-code-coverage-report
-        path: test-results.txt
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Optional but useful for debugging
+      - name: Check DB connection
+        run: |
+          echo "Waiting for Postgres..."
+          sleep 5
+
+      - name: Run tests
+        run: npm test
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results.txt
